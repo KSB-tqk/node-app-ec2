@@ -1,6 +1,6 @@
-const express = require('express')
-const morgan = require('morgan')
-const mysql = require('mysql2')
+const express = require("express")
+const morgan = require("morgan")
+const mysql = require("mysql2")
 
 const app = express()
 
@@ -15,26 +15,26 @@ const pool = mysql.createPool({
 })
 
 function getRandomInt(max) {
-  return 1 + Math.floor(Math.random() * (max-1))
+  return 1 + Math.floor(Math.random() * (max - 1))
 }
 
 async function getCharacter(id) {
-  const [characters] = await pool.promise().query("SELECT * FROM characters WHERE id = ?", [
-    id,
-  ])
+  const [characters] = await pool
+    .promise()
+    .query("SELECT * FROM characters WHERE id = ?", [id])
   return characters[0]
 }
 async function randomId() {
-  const [rows] = await pool.promise().query(
-    "SELECT COUNT(*) as totalCharacters FROM characters"
-  )
+  const [rows] = await pool
+    .promise()
+    .query("SELECT COUNT(*) as totalCharacters FROM characters")
   const { totalCharacters } = rows[0]
   const randomId = getRandomInt(totalCharacters)
   return randomId
 }
 
 app.get("/test", (req, res) => {
-  res.send("<h1>It's working 🤗</h1>")
+  res.send("<h1>Connecting to EC2 Successfully !</h1>")
 })
 
 app.get("/", async (req, res) => {
@@ -49,7 +49,7 @@ app.get("/", async (req, res) => {
 
 app.get("/:id", async (req, res) => {
   try {
-    const id = parseInt(req.params.id) || await randomId()
+    const id = parseInt(req.params.id) || (await randomId())
     const character = await getCharacter(id)
     res.send(character)
   } catch (error) {
